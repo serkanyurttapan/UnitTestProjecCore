@@ -2,6 +2,7 @@
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnitTestProject.Web.Controllers;
@@ -82,7 +83,7 @@ namespace UdemyRealWorldUnitTest.Test
 
 
         [Fact]
-        public async void Edit_IdIsNull_ReturnRedirectTıAction()
+        public async void Edit_IdIsNull_ReturnRedirectTAction()
         {
             var result = await _productsController.Details(null);
             var redirect = Assert.IsType<RedirectToActionResult>(result);
@@ -97,7 +98,40 @@ namespace UdemyRealWorldUnitTest.Test
         {
             var result = await _productsController.Details(22);
             var redirect = Assert.IsType<NotFoundResult>(result);
-            Assert.Equal(404, redirect.StatusCode);
+            Assert.Equal<int>(404, redirect.StatusCode);
+        }
+        [Theory]
+        [InlineData(2)]
+        public async void Edit_ValidId_ReturnProduct(int productId)
+        {
+            Product product = products.Find(x => x.Id == productId);
+            _mockRepo.Setup(repo => repo.GetById(productId)).ReturnsAsync(product);
+
+            var result = await _productsController.Details(productId);
+            var resultView = Assert.IsType<ViewResult>(result).Model as Product;
+        }
+        [Fact]
+        public void Create_Action_ReturnView()
+        {
+            var result = _productsController.Create();
+            Assert.IsType<ViewResult>(result);
+        }
+        [Fact]
+        public async void Create_InvalidModelState_ReturnView()
+        {
+            _productsController.ModelState.AddModelError("Name", "Model Alanı Gereklidir.");
+            var result = await _productsController.Create(null);
+            var viewResult = Assert.IsType<ViewResult>(result).Model as Product;
+
+            Assert.Equal(nameof(Index), "");
+        }
+        [Fact]
+        public async void CreatePOST_ValidModelState_CreateMethodExecute()
+        {
+            Product product = null;
+            _mockRepo.Setup(x => x.Create(It.IsAny<Product>()))
+                .Callback<Product>(x => product= x);
+            var result = await _productsController.Create(products.First());
         }
     }
 }

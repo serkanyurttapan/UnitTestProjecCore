@@ -8,7 +8,9 @@ namespace UnitTestProject.Web.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Gerekli alan")]
+        [StringLength(5, MinimumLength = 3, ErrorMessage = "Minimum 3, Maximum 30 characters")]
+
         public string Name { get; set; }
 
         [Required]
