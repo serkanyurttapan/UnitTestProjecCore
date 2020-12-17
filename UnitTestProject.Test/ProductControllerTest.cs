@@ -101,7 +101,7 @@ namespace UdemyRealWorldUnitTest.Test
             Assert.Equal<int>(404, redirect.StatusCode);
         }
         [Theory]
-        [InlineData(2)]
+        [InlineData(2)] //parametr aldığı durumda bu eklentiler eklenir. aksi halde sadece fact attribute eklenir.
         public async void Edit_ValidId_ReturnProduct(int productId)
         {
             Product product = products.Find(x => x.Id == productId);
