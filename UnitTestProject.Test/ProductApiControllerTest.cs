@@ -55,7 +55,29 @@ namespace UnitTestProject.Test
             var result = await _productApiController.GetProducts();
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnProduct = Assert.IsAssignableFrom<IEnumerable<Product>>(okResult.Value);
-            Assert.Equal<int>(32, returnProduct.Count());
+            Assert.Equal<int>(3, returnProduct.Count());
+        }
+        [Theory]
+        [InlineData(0)]
+        public async void GetProduct_IdIsnull_ReturnNotFound(int productId)
+        {
+            Product product = null;
+            _mock.Setup(x => x.GetById(productId)).ReturnsAsync(product);
+            var result = await _productApiController.GetProduct(productId);
+            Assert.IsType<NotFoundResult>(result);
+        }
+        [Theory]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async void GetProducy_Invalid_ReturnOkResult(int productId)
+        {
+            var product = products.First(x => x.Id == productId);
+            _mock.Setup(x => x.GetById(productId)).ReturnsAsync(product);
+            var result = await _productApiController.GetProduct(productId);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnProduct = Assert.IsType<Product>(okResult.Value);
+            Assert.Equal<int>(product.Id, productId);
+            Assert.Equal(product.Name, returnProduct.Name);
         }
     }
 }
