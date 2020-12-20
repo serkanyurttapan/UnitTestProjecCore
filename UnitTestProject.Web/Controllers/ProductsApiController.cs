@@ -10,8 +10,10 @@ namespace UnitTestProject.Web.Controllers
     public class ProductsApiController : ControllerBase
     {
         private readonly IRepository<Product> _repository;
+        private readonly Helpers.Helper _helper;
         public ProductsApiController(IRepository<Product> repository)
         {
+            _helper = new Helpers.Helper();
             _repository = repository;
         }
         // GET: api/<ProductsApiController>
@@ -53,5 +55,11 @@ namespace UnitTestProject.Web.Controllers
             _repository.Delete(product);
             return NoContent();
         }
+        [HttpGet("{a}/{b}")]
+        public IActionResult AddHelper(int a, int b)
+        {
+            return Ok(_helper.Add(a, b));
+        }
+
     }
 }

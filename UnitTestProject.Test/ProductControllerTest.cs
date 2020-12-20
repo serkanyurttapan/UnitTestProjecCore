@@ -116,21 +116,13 @@ namespace UdemyRealWorldUnitTest.Test
             var result = _productsController.Create();
             Assert.IsType<ViewResult>(result);
         }
-        [Fact]
-        public async void Create_InvalidModelState_ReturnView()
-        {
-            _productsController.ModelState.AddModelError("Name", "Model Alanı Gereklidir.");
-            var result = await _productsController.Create(null);
-            var viewResult = Assert.IsType<ViewResult>(result).Model as Product;
-
-            Assert.Equal(nameof(Index), "");
-        }
+       
         [Fact]
         public async void CreatePOST_ValidModelState_CreateMethodExecute()
         {
             Product product = null;
             _mockRepo.Setup(x => x.Create(It.IsAny<Product>()))
-                .Callback<Product>(x => product= x);
+                .Callback<Product>(x => product = x);
             var result = await _productsController.Create(products.First());
         }
     }
